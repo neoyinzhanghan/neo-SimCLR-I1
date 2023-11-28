@@ -80,7 +80,7 @@ parser.add_argument(
     "--out_dim", default=128, type=int, help="feature dimension (default: 128)"
 )
 parser.add_argument(
-    "--log-every-n-steps", default=100, type=int, help="Log every n steps"
+    "--log-every-n-steps", default=10, type=int, help="Log every n steps"
 )
 parser.add_argument(
     "--temperature",
