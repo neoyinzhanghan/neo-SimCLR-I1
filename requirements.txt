@@ -111,8 +111,6 @@
 numpy==1.18.1
 opencv==3.4.2
 pillow==7.0
-pip==20.0
-python==3.7.6
 pytorch==1.4.0
 torchvision==0.5
 tensorboard==2.1
