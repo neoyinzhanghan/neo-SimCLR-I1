@@ -17,7 +17,7 @@ parser.add_argument(
     "-data", metavar="DIR", default="./datasets", help="path to dataset"
 )
 parser.add_argument(
-    "--dataset_name", default="stl10", help="dataset name", choices=["stl10", "cifar10"]
+    "--dataset_name", default="stl10", help="dataset name",
 )
 parser.add_argument(
     "-a",
