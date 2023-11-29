@@ -3,7 +3,7 @@ import torch
 
 # Reopening the HDF5 file to check other datasets
 file_path = (
-    "/media/hdd2/debug_slides_resnet/23.CFNA.380 A1 H&E _104034-patch_features.h5"
+    "/media/hdd2/one_slide_simclr/23.CFNA.9 A1 H&E _154610-patch_features.h5"
 )
 
 # Dictionary to hold tensor data from each dataset
