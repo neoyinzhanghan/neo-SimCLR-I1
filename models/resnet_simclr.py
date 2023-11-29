@@ -89,7 +89,7 @@ class SimCLRFeatureExtractor(nn.Module):
         # print(list(self.model.backbone.children()))  # TODO remove, for debugging
 
         # Iterate through all layers of the backbone except the last one
-        for layer in list(self.extraction_model.backbone.children())[:-1]:
+        for layer in list(self.extraction_model.children())[:-1]:
             x = layer(x)
 
         # x now contains the features from the layer just before the last layer
