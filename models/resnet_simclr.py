@@ -64,6 +64,13 @@ class SimCLRFeatureExtractor(nn.Module):
         state_dict = checkpoint["state_dict"]
         # Load the model weights from the checkpoint
 
+        for k in list(state_dict.keys()):
+            if k.startswith("backbone."):
+                if k.startswith("backbone") and not k.startswith("backbone.fc"):
+                    # remove prefix
+                    state_dict[k[len("backbone.") :]] = state_dict[k]
+            del state_dict[k]
+
         if arch == "resnet18":
             model = models.resnet18(pretrained=False, num_classes=10)
         elif arch == "resnet50":
@@ -77,6 +84,8 @@ class SimCLRFeatureExtractor(nn.Module):
 
     def forward(self, x: torch.Tensor):
         """Forward pass"""
+
+        print(list(self.model.backbone.children()))  # TODO remove, for debugging
 
         # Iterate through all layers of the backbone except the last one
         for layer in list(self.model.backbone.children())[:-1]:
