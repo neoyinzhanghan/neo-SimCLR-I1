@@ -86,7 +86,7 @@ class SimCLRFeatureExtractor(nn.Module):
     def forward(self, x: torch.Tensor):
         """Forward pass"""
 
-        print(list(self.model.backbone.children()))  # TODO remove, for debugging
+        # print(list(self.model.backbone.children()))  # TODO remove, for debugging
 
         # Iterate through all layers of the backbone except the last one
         for layer in list(self.model.backbone.children())[:-1]:
