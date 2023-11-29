@@ -76,7 +76,8 @@ class SimCLRFeatureExtractor(nn.Module):
         elif arch == "resnet50":
             model = models.resnet50(pretrained=False, num_classes=10)
 
-        model.load_state_dict(state_dict)
+        log = model.load_state_dict(state_dict, strict=False)
+        assert log.missing_keys == ["fc.weight", "fc.bias"]
 
         model.eval()
 
