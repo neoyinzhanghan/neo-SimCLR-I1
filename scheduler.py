@@ -2,6 +2,7 @@ from torch.optim.lr_scheduler import LRScheduler
 import math
 import warnings
 
+
 class CosineAnnealingLRWithWarmUp(LRScheduler):
     def __init__(
         self, optimizer, T_max, warm_up_epochs, eta_min=0, last_epoch=-1, verbose=False
@@ -19,10 +20,10 @@ class CosineAnnealingLRWithWarmUp(LRScheduler):
                 UserWarning,
             )
 
-            if self.last_epoch < self.warm_up_epochs:
-                warmth = (self.last_epoch + 1) / self.warm_up_epochs
-            else:
-                warmth = 1
+        if self.last_epoch < self.warm_up_epochs:
+            warmth = (self.last_epoch + 1) / self.warm_up_epochs
+        else:
+            warmth = 1
 
         if self.last_epoch == 0:
             return [warmth * group["lr"] for group in self.optimizer.param_groups]
