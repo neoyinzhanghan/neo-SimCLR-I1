@@ -48,10 +48,10 @@ parser.add_argument(
 parser.add_argument(
     "-b",
     "--batch-size",
-    default=4096,
+    default=1024,
     type=int,
     metavar="N",
-    help="mini-batch size (default: 256), this is the total "
+    help="mini-batch size, this is the total "
     "batch size of all GPUs on the current node when "
     "using Data Parallel or Distributed Data Parallel",
 )
