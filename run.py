@@ -83,7 +83,7 @@ parser.add_argument(
 )
 
 parser.add_argument(
-    "--out_dim", default=1024, type=int, help="feature dimension (default: 1024)"
+    "--out_dim", default=128, type=int, help="feature dimension (default: 128)"
 )
 parser.add_argument(
     "--log-every-n-steps", default=10, type=int, help="Log every n steps"
