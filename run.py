@@ -57,12 +57,11 @@ parser.add_argument(
 )
 parser.add_argument(
     "--base_lr",
-    "--base-lr",
     default=0.3,
     type=float,
     metavar="LR",
     help="initial base learning rate, the learning rate will be scaled  based on batch size/256",
-    dest="lr",
+    dest="base_lr",
 )
 parser.add_argument(
     "--wd",
