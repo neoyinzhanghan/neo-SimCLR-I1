@@ -11,13 +11,17 @@ class AddWarmup(LRScheduler):
         self.last_epoch = -1
 
     def step(self):
+        current_epoch = self.last_epoch
         if self.last_epoch < self.warmup_epochs:
-            self.last_epoch += 1
+            current_epoch += 1
         else:
             self.scheduler.step()
 
+        self.last_epoch = current_epoch
+
     def get_lr(self):
-        warmth = min(1.0, float(self.last_epoch) / self.warmup_epochs)
+        current_epoch = self.last_epoch
+        warmth = min(1.0, float(current_epoch) / self.warmup_epochs)
         scheduler_lr = self.scheduler.get_lr()
 
         return [warmth * lr for lr in scheduler_lr]
