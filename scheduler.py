@@ -28,25 +28,26 @@ class AddWarmup(LRScheduler):
     """A wrapper for scheduler with warm-up"""
 
     def __init__(self, scheduler, warmup_epochs):
-        super().__init__(scheduler.optimizer, scheduler.last_epoch)
         self.scheduler = scheduler
+        self.optimizer = scheduler.optimizer  # Set optimizer directly
         self.warmup_epochs = warmup_epochs
+        self.last_epoch = -1  # Initialize last_epoch directly
+
+        print(f"Initialized AddWarmup with warmup_epochs: {self.warmup_epochs}")  # Debug print
 
     def step(self):
-        current_epoch = self.last_epoch + 1  # Update the epoch count
+        current_epoch = self.last_epoch + 1
+        print(f"Step called with current_epoch: {current_epoch}, warmup_epochs: {self.warmup_epochs}")  # Debug print
+
         if current_epoch <= self.warmup_epochs:
-            # During warmup, adjust learning rate without stepping the base scheduler
             self._last_lr = [base_lr * current_epoch / self.warmup_epochs for base_lr in self.base_lrs]
         else:
-            # After warmup, step the base scheduler
             self.scheduler.step()
             self._last_lr = self.scheduler.get_last_lr()
-        self.last_epoch = current_epoch  # Update last_epoch of the wrapper
+        self.last_epoch = current_epoch
 
     def get_lr(self):
         if self.last_epoch <= self.warmup_epochs:
-            # Return warmup learning rates
             return [base_lr * float(self.last_epoch) / self.warmup_epochs for base_lr in self.base_lrs]
         else:
-            # Return learning rates from the base scheduler
             return self.scheduler.get_lr()
