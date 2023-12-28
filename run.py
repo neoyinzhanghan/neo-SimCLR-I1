@@ -43,7 +43,7 @@ parser.add_argument(
     "--epochs", default=100, type=int, metavar="N", help="number of total epochs to run"
 )
 parser.add_argument(
-    "--warm_up_epochs", default=10, type=int, help="number of linear warm-up epochs"
+    "--warmup_epochs", default=10, type=int, help="number of linear warm-up epochs"
 )
 parser.add_argument(
     "-b",
@@ -153,7 +153,7 @@ def main():
         optimizer, T_max=len(train_loader), eta_min=0, last_epoch=-1
     )
 
-    scheduler = AddWarmup(base_scheduler, warmup_epochs=args.warm_up_epochs)
+    scheduler = AddWarmup(base_scheduler, warmup_epochs=args.warmup_epochs)
 
     #  It’s a no-op if the 'gpu_index' argument is a negative integer or None.
     with torch.cuda.device(args.gpu_index):
