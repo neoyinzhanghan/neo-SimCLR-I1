@@ -6,7 +6,7 @@ from data_aug.contrastive_learning_dataset import ContrastiveLearningDataset
 from models.resnet_simclr import ResNetSimCLR
 from simclr import SimCLR
 from timm.optim.lars import Lars
-from scheduler import CosineAnnealingLRWithWarmUp
+from scheduler import AddWarmup
 
 model_names = sorted(
     name
@@ -40,7 +40,7 @@ parser.add_argument(
     help="number of data loading workers (default: 32)",
 )
 parser.add_argument(
-    "--epochs", default=200, type=int, metavar="N", help="number of total epochs to run"
+    "--epochs", default=100, type=int, metavar="N", help="number of total epochs to run"
 )
 parser.add_argument(
     "--warm_up_epochs", default=10, type=int, help="number of linear warm-up epochs"
@@ -104,7 +104,7 @@ parser.add_argument(
 parser.add_argument("--gpu_index", default=0, type=int, help="Gpu index.")
 parser.add_argument(
     "--num_images_per_epoch",
-    default=40960,
+    default=50000,
     type=int,
     help="Number of images per epoch.",
 )
@@ -149,13 +149,11 @@ def main():
 
     optimizer = Lars(model.parameters(), lr=lr, weight_decay=args.weight_decay)
 
-    scheduler = CosineAnnealingLRWithWarmUp(
-        optimizer,
-        T_max=len(train_loader),
-        warm_up_epochs=args.warm_up_epochs,
-        eta_min=0,
-        last_epoch=-1,
+    base_scheduler = torch.optim.lr_scheduler.CosineAnnealingLR(
+        optimizer, T_max=len(train_loader), eta_min=0, last_epoch=-1
     )
+
+    scheduler = AddWarmup(base_scheduler, warmup_epochs=args.warm_up_epochs)
 
     #  It’s a no-op if the 'gpu_index' argument is a negative integer or None.
     with torch.cuda.device(args.gpu_index):

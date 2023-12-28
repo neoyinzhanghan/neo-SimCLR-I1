@@ -1,71 +1,22 @@
 from torch.optim.lr_scheduler import LRScheduler
-import math
-import warnings
 
 
-class CosineAnnealingLRWithWarmUp(LRScheduler):
-    def __init__(
-        self, optimizer, T_max, warm_up_epochs, eta_min=0, last_epoch=-1, verbose=False
-    ):
-        self.T_max = T_max
-        self.eta_min = eta_min
-        self.warm_up_epochs = warm_up_epochs
-        super().__init__(optimizer, last_epoch, verbose)
+class AddWarmup(LRScheduler):
+    """A wrapper for scheduler with warm-up"""
+
+    def __init__(self, scheduler, warmup_epochs):
+        super().__init__(scheduler.optimizer, scheduler.last_epoch)
+        self.scheduler = scheduler
+        self.warmup_epochs = warmup_epochs
+
+    def step(self):
+        if self.last_epoch < self.warmup_epochs:
+            self.last_epoch += 1
+        else:
+            self.scheduler.step()
 
     def get_lr(self):
-        if not self._get_lr_called_within_step:
-            warnings.warn(
-                "To get the last learning rate computed by the scheduler, "
-                "please use `get_last_lr()`.",
-                UserWarning,
-            )
+        warmth = min(1.0, float(self.last_epoch) / self.warmup_epochs)
+        scheduler_lr = self.scheduler.get_lr()
 
-        if self.last_epoch < self.warm_up_epochs:
-            warmth = (self.last_epoch + 1) / self.warm_up_epochs
-        else:
-            warmth = 1
-
-        if self.last_epoch == 0:
-            return [warmth * group["lr"] for group in self.optimizer.param_groups]
-        elif self._step_count == 1 and self.last_epoch > 0:
-            return [
-                warmth
-                * (
-                    self.eta_min
-                    + (base_lr - self.eta_min)
-                    * (1 + math.cos((self.last_epoch) * math.pi / self.T_max))
-                    / 2
-                )
-                for base_lr, group in zip(self.base_lrs, self.optimizer.param_groups)
-            ]
-        elif (self.last_epoch - 1 - self.T_max) % (2 * self.T_max) == 0:
-            return [
-                warmth
-                * (
-                    group["lr"]
-                    + (base_lr - self.eta_min)
-                    * (1 - math.cos(math.pi / self.T_max))
-                    / 2
-                )
-                for base_lr, group in zip(self.base_lrs, self.optimizer.param_groups)
-            ]
-        return [
-            warmth
-            * (
-                (1 + math.cos(math.pi * self.last_epoch / self.T_max))
-                / (1 + math.cos(math.pi * (self.last_epoch - 1) / self.T_max))
-                * (group["lr"] - self.eta_min)
-                + self.eta_min
-            )
-            for group in self.optimizer.param_groups
-        ]
-
-    def _get_closed_form_lr(self):
-        return [
-            (min(self.last_epoch + 1, self.warm_up_epochs) / self.warm_up_epochs)
-            * self.eta_min
-            + (base_lr - self.eta_min)
-            * (1 + math.cos(math.pi * self.last_epoch / self.T_max))
-            / 2
-            for base_lr in self.base_lrs
-        ]
+        return [warmth * lr for lr in scheduler_lr]
