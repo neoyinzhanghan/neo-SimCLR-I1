@@ -101,9 +101,9 @@ class SimCLR(object):
 
                 n_iter += 1
 
-            # # warmup for the first 10 epochs <<< this we already implemented?
-            # if epoch_counter >= warmup_epochs:
-            #     self.scheduler.step()
+            # warmup for the first 10 epochs <<< this we already implemented?
+            if epoch_counter >= 10:
+                self.scheduler.step()
             logging.debug(
                 f"Epoch: {epoch_counter}\tLoss: {loss}\tTop1 accuracy: {top1[0]}"
             )

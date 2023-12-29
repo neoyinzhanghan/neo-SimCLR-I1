@@ -153,13 +153,12 @@ def main():
         optimizer, T_max=len(train_loader), eta_min=0, last_epoch=-1
     )
 
-    scheduler = AddWarmup(base_scheduler, warmup_epochs=args.warmup_epochs)
+    scheduler = base_scheduler
+    # scheduler = AddWarmup(base_scheduler, warmup_epochs=args.warmup_epochs) ### REMOVING WARM UP FOR DEBUGGING
 
     #  It’s a no-op if the 'gpu_index' argument is a negative integer or None.
     with torch.cuda.device(args.gpu_index):
-        simclr = SimCLR(
-            model=model, optimizer=optimizer, scheduler=scheduler, args=args
-        )
+        simclr = SimCLR(model=model, optimizer=optimizer, scheduler=scheduler, args=args)
         simclr.train(train_loader)
 
 
