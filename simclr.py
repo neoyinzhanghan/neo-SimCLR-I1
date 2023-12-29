@@ -91,10 +91,11 @@ class SimCLR(object):
                 scaler.update()
 
                 if n_iter % self.args.log_every_n_steps == 0:
-                    top1, top5 = accuracy(logits, labels, topk=(1, 5))
+                    # top1, top5 = accuracy(logits, labels, topk=(1, 5)) # this calculation is not necessary because we do not have ground truth labels
+                    # # We should look into where the labels are coming from and how they are being used
                     self.writer.add_scalar("loss", loss, global_step=n_iter)
-                    self.writer.add_scalar("acc/top1", top1[0], global_step=n_iter)
-                    self.writer.add_scalar("acc/top5", top5[0], global_step=n_iter)
+                    # self.writer.add_scalar("acc/top1", top1[0], global_step=n_iter)
+                    # self.writer.add_scalar("acc/top5", top5[0], global_step=n_iter)
                     self.writer.add_scalar(
                         "learning_rate", self.scheduler.get_lr()[0], global_step=n_iter
                     )
@@ -102,11 +103,18 @@ class SimCLR(object):
                 n_iter += 1
 
             # warmup for the first 10 epochs <<< this we already implemented?
-            if epoch_counter >= 10:
+            if epoch_counter >= self.scheduler.warmup_epochs:
                 self.scheduler.step()
-            logging.debug(
-                f"Epoch: {epoch_counter}\tLoss: {loss}\tTop1 accuracy: {top1[0]}"
-            )
+                if self.scheduler.warmth < 1:
+                    self.scheduler.warmth = 1
+                    print("User warming -- warmth 1 not reached after warmup epoch traversal -- manually setting to 1")
+            else:
+                self.scheduler.warmth += 1 / self.scheduler.warmup_epochs
+                if self.scheduler.warmth > 1:
+                    self.scheduler.warmth = 1
+            # logging.debug(
+            #     f"Epoch: {epoch_counter}\tLoss: {loss}\tTop1 accuracy: {top1[0]}"
+            # )
 
         logging.info("Training has finished.")
         # save model checkpoints
