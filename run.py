@@ -1,6 +1,7 @@
 import argparse
 import torch
 import torch.backends.cudnn as cudnn
+import os
 from torchvision import models
 from data_aug.contrastive_learning_dataset import ContrastiveLearningDataset
 from models.resnet_simclr import ResNetSimCLR
@@ -127,9 +128,10 @@ def main():
     dataset = ContrastiveLearningDataset(args.data)
 
     train_dataset = dataset.get_dataset(
-        args.dataset_name, args.n_views, args.num_images_per_epoch
+        os.path.join(args.dataset_name, "train"),
+        args.n_views,
+        args.num_images_per_epoch,
     )
-
     train_loader = torch.utils.data.DataLoader(
         train_dataset,
         batch_size=args.batch_size,
