@@ -52,17 +52,25 @@ class ContrastiveLearningDataset:
             dataset_fn = valid_datasets[name]
         except KeyError:
             if os.path.isdir(name):
-                train_folders, _ = folder_train_test_split(
-                    os.path.join(name, "train"), train_prop=1
-                )
-                train_dataset = PFDataset(
-                    folders=train_folders,
-                    num_images_per_epoch=num_images_per_epoch,  # args.num_images_per_epoch,
+                # train_folders, _ = folder_train_test_split(
+                #     os.path.join(name, "train"), train_prop=1
+                # )
+                # train_dataset = PFDataset(
+                #     folders=train_folders,
+                #     num_images_per_epoch=num_images_per_epoch,  # args.num_images_per_epoch,
+                #     transform=ContrastiveLearningViewGenerator(
+                #         self.get_simclr_pipeline_transform(96), n_views
+                #     ),
+                # )
+                # print(train_dataset)
+
+                # name is a path to an imagenet like dataset
+                train_dataset = datasets.ImageFolder(
+                    name,
                     transform=ContrastiveLearningViewGenerator(
                         self.get_simclr_pipeline_transform(96), n_views
                     ),
                 )
-                # print(train_dataset)
 
                 return train_dataset
             else:
