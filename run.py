@@ -127,6 +127,7 @@ def main():
 
     dataset = ContrastiveLearningDataset(args.data)
 
+    print("Loading dataset...")
     train_dataset = dataset.get_dataset(
         os.path.join(args.dataset_name, "train"),
         args.n_views,
@@ -141,6 +142,7 @@ def main():
         drop_last=True,
     )
 
+    print("Creating model...")
     model = ResNetSimCLR(base_model=args.arch, out_dim=args.out_dim)
 
     # optimizer = torch.optim.Adam(
@@ -160,6 +162,7 @@ def main():
     )  ### REMOVING WARM UP FOR DEBUGGING
 
     #  It’s a no-op if the 'gpu_index' argument is a negative integer or None.
+    print("Training starts...")
     with torch.cuda.device(args.gpu_index):
         simclr = SimCLR(
             model=model, optimizer=optimizer, scheduler=scheduler, args=args
