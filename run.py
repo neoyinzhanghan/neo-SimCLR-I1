@@ -49,7 +49,7 @@ parser.add_argument(
 parser.add_argument(
     "-b",
     "--batch-size",
-    default=1024,
+    default=512,
     type=int,
     metavar="N",
     help="mini-batch size, this is the total "
@@ -67,7 +67,7 @@ parser.add_argument(
 parser.add_argument(
     "--wd",
     "--weight-decay",
-    default=1e-6,
+    default=0.0001,
     type=float,
     metavar="W",
     help="weight decay (default: 1e-6)",
