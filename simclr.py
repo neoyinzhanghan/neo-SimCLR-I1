@@ -112,6 +112,7 @@ class SimCLR(object):
             #     f"Epoch: {epoch_counter}\tLoss: {loss}\tTop1 accuracy: {top1[0]}"
             # )
             
+            val_loss = 0
             # now compute the validation loss
             with torch.no_grad():
                 for images, _ in tqdm(validation_loader):
@@ -119,8 +120,10 @@ class SimCLR(object):
                     images = images.to(self.args.device)
                     features = self.model(images)
                     logits, labels = self.info_nce_loss(features)
-                    loss = self.criterion(logits, labels)
-                    self.writer.add_scalar("validation_loss", loss, global_step=epoch_counter)
+                    val_loss += self.criterion(logits, labels)
+        
+            val_loss /= len(validation_loader)
+            self.writer.add_scalar("validation_loss", val_loss, global_step=epoch_counter)
 
             self.writer.add_scalar(
                 "learning_rate", self.scheduler.get_lr()[0], global_step=epoch_counter)
