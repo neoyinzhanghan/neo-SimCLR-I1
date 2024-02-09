@@ -62,7 +62,7 @@ class SimCLR(object):
         logits = logits / self.args.temperature
         return logits, labels
 
-    def train(self, train_loader):
+    def train(self, train_loader, validation_loader):
         scaler = GradScaler(enabled=self.args.fp16_precision)
 
         # save config file
@@ -93,7 +93,7 @@ class SimCLR(object):
                 if n_iter % self.args.log_every_n_steps == 0:
                     # top1, top5 = accuracy(logits, labels, topk=(1, 5)) # this calculation is not necessary because we do not have ground truth labels
                     # # We should look into where the labels are coming from and how they are being used
-                    self.writer.add_scalar("loss", loss, global_step=n_iter)
+                    self.writer.add_scalar("training_loss", loss, global_step=n_iter)
                     # self.writer.add_scalar("acc/top1", top1[0], global_step=n_iter)
                     # self.writer.add_scalar("acc/top5", top5[0], global_step=n_iter)
                     self.writer.add_scalar(
@@ -115,6 +115,16 @@ class SimCLR(object):
             # logging.debug(
             #     f"Epoch: {epoch_counter}\tLoss: {loss}\tTop1 accuracy: {top1[0]}"
             # )
+            
+            # now compute the validation loss
+            with torch.no_grad():
+                for images, _ in tqdm(validation_loader):
+                    images = torch.cat(images, dim=0)
+                    images = images.to(self.args.device)
+                    features = self.model(images)
+                    logits, labels = self.info_nce_loss(features)
+                    loss = self.criterion(logits, labels)
+                    self.writer.add_scalar("validation_loss", loss, global_step=n_iter)
 
         logging.info("Training has finished.")
         # save model checkpoints

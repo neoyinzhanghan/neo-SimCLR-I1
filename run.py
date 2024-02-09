@@ -142,6 +142,21 @@ def main():
         drop_last=True,
     )
 
+    validation_dataset = dataset.get_dataset(
+        os.path.join(args.dataset_name, "test"),
+        args.n_views,
+        args.num_images_per_epoch,
+    )
+
+    validation_loader = torch.utils.data.DataLoader(
+        validation_dataset,
+        batch_size=args.batch_size,
+        shuffle=False,
+        num_workers=args.workers,
+        pin_memory=True,
+        drop_last=True,
+    )
+
     print("Creating model...")
     model = ResNetSimCLR(base_model=args.arch, out_dim=args.out_dim)
 
