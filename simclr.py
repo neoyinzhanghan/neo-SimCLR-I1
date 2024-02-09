@@ -109,7 +109,7 @@ class SimCLR(object):
                     self.scheduler.warmth = 1
                     print("User warming -- warmth 1 not reached after warmup epoch traversal -- manually setting to 1")
             else:
-                self.scheduler.warmth += 1 / self.scheduler.warmup_epochs
+                self.scheduler.warmth += (1 / self.scheduler.warmup_epochs)
                 if self.scheduler.warmth > 1:
                     self.scheduler.warmth = 1
             # logging.debug(
