@@ -96,10 +96,6 @@ class SimCLR(object):
                     self.writer.add_scalar("training_loss", loss, global_step=n_iter)
                     # self.writer.add_scalar("acc/top1", top1[0], global_step=n_iter)
                     # self.writer.add_scalar("acc/top5", top5[0], global_step=n_iter)
-                    self.writer.add_scalar(
-                        "learning_rate", self.scheduler.get_lr()[0], global_step=n_iter
-                    )
-
                 n_iter += 1
 
             # warmup for the first 10 epochs <<< this we already implemented?
@@ -124,7 +120,11 @@ class SimCLR(object):
                     features = self.model(images)
                     logits, labels = self.info_nce_loss(features)
                     loss = self.criterion(logits, labels)
-                    self.writer.add_scalar("validation_loss", loss, global_step=n_iter)
+                    self.writer.add_scalar("validation_loss", loss, global_step=epoch_counter)
+
+            self.writer.add_scalar(
+                "learning_rate", self.scheduler.get_lr()[0], global_step=epoch_counter)
+
 
         logging.info("Training has finished.")
         # save model checkpoints
