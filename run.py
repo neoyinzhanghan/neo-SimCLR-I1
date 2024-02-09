@@ -182,7 +182,7 @@ def main():
         simclr = SimCLR(
             model=model, optimizer=optimizer, scheduler=scheduler, args=args
         )
-        simclr.train(train_loader)
+        simclr.train(train_loader, validation_loader)
 
 
 if __name__ == "__main__":
