@@ -91,7 +91,7 @@ parser.add_argument(
 )
 parser.add_argument(
     "--temperature",
-    default=0.07,
+    default=0.1,
     type=float,
     help="softmax temperature (default: 0.07)",
 )
