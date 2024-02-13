@@ -169,7 +169,7 @@ def main():
     optimizer = Lars(model.parameters(), lr=lr, weight_decay=args.weight_decay)
 
     base_scheduler = torch.optim.lr_scheduler.CosineAnnealingLR(
-        optimizer, T_max=len(train_loader), eta_min=0, last_epoch=-1
+        optimizer, T_max=len(train_loader) * args.epochs, eta_min=0, last_epoch=-1
     )
 
     scheduler = AddWarmup(
