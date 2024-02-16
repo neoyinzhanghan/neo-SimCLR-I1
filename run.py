@@ -143,13 +143,13 @@ def main():
     )
 
     validation_dataset = dataset.get_dataset(
-        os.path.join(args.dataset_name, "test"),
+        os.path.join(args.dataset_name, "val"),
         args.n_views,
         args.num_images_per_epoch,
     )
 
     validation_loader = torch.utils.data.DataLoader(
-        train_dataset,
+        validation_dataset,
         batch_size=args.batch_size,
         shuffle=False,
         num_workers=args.workers,
