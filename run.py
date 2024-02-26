@@ -149,7 +149,7 @@ def main():
     )
 
     validation_loader = torch.utils.data.DataLoader(
-        validation_dataset,
+        train_dataset, # TODO: change this to validation_dataset after debugging
         batch_size=args.batch_size,
         shuffle=False,
         num_workers=args.workers,
