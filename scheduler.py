@@ -12,6 +12,9 @@ class AddWarmup(LRScheduler):
 
     def step(self):
         self.scheduler.step()
+        print("The scheduler has stepped")
+        print(f"The current warmth is: {self.warmth}")
+        print(f"Learning rate: {self.get_lr()}")
 
     def get_lr(self):
         scheduler_lr = self.scheduler.get_lr()

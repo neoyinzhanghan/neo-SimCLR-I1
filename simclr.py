@@ -11,6 +11,14 @@ from utils import save_config_file, accuracy, save_checkpoint
 
 torch.manual_seed(0)
 
+def txt_log(message:str):
+    """ Continue writing in the tmp_log.txt file in the working directory if it already exists,
+    if not, create a new file and write in it. Each message is written in a new line.
+    """
+
+    with open('tmp_log.txt', 'a') as file:
+        file.write(message + '\n')
+
 
 class SimCLR(object):
     def __init__(self, *args, **kwargs):
@@ -104,10 +112,14 @@ class SimCLR(object):
                 if self.scheduler.warmth < 1:
                     self.scheduler.warmth = 1
                     print("User warming -- warmth 1 not reached after warmup epoch traversal -- manually setting to 1")
+
+                txt_log("The current warmth is: 1")
             else:
                 self.scheduler.warmth += (1 / self.scheduler.warmup_epochs)
                 if self.scheduler.warmth > 1:
                     self.scheduler.warmth = 1
+                
+                txt_log(f"The current warmth is: {self.scheduler.warmth}")
             # logging.debug(
             #     f"Epoch: {epoch_counter}\tLoss: {loss}\tTop1 accuracy: {top1[0]}"
             # )
@@ -127,6 +139,10 @@ class SimCLR(object):
 
             self.writer.add_scalar(
                 "learning_rate", self.scheduler.get_lr()[0], global_step=epoch_counter)
+            
+            txt_log(f"The current learning rate is: {self.scheduler.get_lr()[0]}")
+            txt_log(f"The current learning rate is: {self.scheduler.get_lr()[0]}")
+            txt_log(f"The output of get learning rate method is: {self.scheduler.get_lr()}")
 
 
         logging.info("Training has finished.")
