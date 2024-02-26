@@ -2,6 +2,7 @@ import argparse
 import torch
 import torch.backends.cudnn as cudnn
 import os
+import time
 from torchvision import models
 from data_aug.contrastive_learning_dataset import ContrastiveLearningDataset
 from models.resnet_simclr import ResNetSimCLR
@@ -110,6 +111,14 @@ parser.add_argument(
     help="Number of images per epoch.",
 )
 
+def txt_log(message:str):
+    """ Continue writing in the tmp_log.txt file in the working directory if it already exists,
+    if not, create a new file and write in it. Each message is written in a new line.
+    """
+
+    print(message)
+    with open('tmp_log.txt', 'a') as file:
+        file.write(message + '\n')
 
 def main():
     args = parser.parse_args()
@@ -128,11 +137,18 @@ def main():
     dataset = ContrastiveLearningDataset(args.data)
 
     print("Loading dataset...")
+
+    start_time = time.time()
+
     train_dataset = dataset.get_dataset(
         os.path.join(args.dataset_name, "train"),
         args.n_views,
         args.num_images_per_epoch,
     )
+
+    txt_log(f"Time to load the dataset: {time.time() - start_time}")
+
+    start_time = time.time()
     train_loader = torch.utils.data.DataLoader(
         train_dataset,
         batch_size=args.batch_size,
@@ -142,12 +158,18 @@ def main():
         drop_last=True,
     )
 
+    txt_log(f"Time to load the train_loader: {time.time() - start_time}")
+
+    start_time = time.time()
     validation_dataset = dataset.get_dataset(
         os.path.join(args.dataset_name, "val"),
         args.n_views,
         args.num_images_per_epoch,
     )
 
+    txt_log(f"Time to load the validation_dataset: {time.time() - start_time}")
+
+    start_time = time.time()
     validation_loader = torch.utils.data.DataLoader(
         validation_dataset,
         batch_size=args.batch_size,
@@ -156,6 +178,8 @@ def main():
         pin_memory=True,
         drop_last=True,
     )
+
+    txt_log(f"Time to load the validation_loader: {time.time() - start_time}")
 
     print("Creating model...")
     model = ResNetSimCLR(base_model=args.arch, out_dim=args.out_dim)
