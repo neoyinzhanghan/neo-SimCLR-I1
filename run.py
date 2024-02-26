@@ -171,7 +171,7 @@ def main():
 
     start_time = time.time()
     validation_loader = torch.utils.data.DataLoader(
-        train_dataset,
+        validation_dataset,
         batch_size=args.batch_size,
         shuffle=False,
         num_workers=args.workers,
