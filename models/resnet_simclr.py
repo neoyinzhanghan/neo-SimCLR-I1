@@ -93,7 +93,7 @@ class SimCLRFeatureExtractor(nn.Module):
 
         # Register the hook to the global average pooling layer or the appropriate layer before the projection head
         # Note: Adjust the attribute access (.avgpool) based on your actual model architecture
-        hook_handle = self.extraction_model.backbone.avgpool.register_forward_hook(hook)
+        hook_handle = self.extraction_model.avgpool.register_forward_hook(hook)
 
         # Perform a forward pass with the image
         # Ensure the image tensor is correctly preprocessed and moved to the same device as the model
