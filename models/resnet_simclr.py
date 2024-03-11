@@ -83,17 +83,42 @@ class SimCLRFeatureExtractor(nn.Module):
 
         self.extraction_model = model
 
+
     def forward(self, x: torch.Tensor):
-        """Forward pass"""
+        # Define a hook function that captures the intermediate layer outputs
+        features = {}
+        
+        def hook(module, input, output):
+            features['output'] = output.detach()
 
-        print(list(self.extraction_model.children()))  # TODO remove, for debugging
+        # Register the hook to the global average pooling layer or the appropriate layer before the projection head
+        # Note: Adjust the attribute access (.avgpool) based on your actual model architecture
+        hook_handle = self.extraction_model.backbone.avgpool.register_forward_hook(hook)
 
-        # Iterate through all layers of the backbone except the last one
-        for layer in list(self.extraction_model.children())[:-1]:
-            x = layer(x)
+        # Perform a forward pass with the image
+        # Ensure the image tensor is correctly preprocessed and moved to the same device as the model
+        self.extraction_model.eval()  # Set the model to evaluation mode
+        with torch.no_grad():  # Disable gradient computation for inference
+            _ = self.extraction_model(x)
 
-        # x now contains the features from the layer just before the last layer
-        return x
+        # Remove the hook after getting the features to prevent memory leak
+        hook_handle.remove()
+
+        # Return the captured features
+        return features['output']
+
+
+    # def forward(self, x: torch.Tensor):
+    #     """Forward pass"""
+
+    #     print(list(self.extraction_model.children()))  # TODO remove, for debugging
+
+    #     # Iterate through all layers of the backbone except the last one
+    #     for layer in list(self.extraction_model.children())[:-1]:
+    #         x = layer(x)
+
+    #     # x now contains the features from the layer just before the last layer
+    #     return x
 
 
 def load_model(ckpt_path: str, arch="resnet18"):
