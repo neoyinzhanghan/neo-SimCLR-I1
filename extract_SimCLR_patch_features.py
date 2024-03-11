@@ -76,7 +76,7 @@ parser.add_argument(
 group = parser.add_argument_group("Model")
 ####################################
 
-group.add_argument("--ckpt_path", type=str, help="Path to the MAE checkpoint file.")
+group.add_argument("--ckpt_path", type=str, help="Path to the SimCLR checkpoint file.")
 
 group.add_argument(
     "--arch",

@@ -56,7 +56,7 @@ class SimCLRFeatureExtractor(nn.Module):
     - extraction_model: a SimCLR model for which we defined a forward feature extractor. ### TODO actually I think the get_feature can be implemented here...
     """
 
-    def __init__(self, ckpt_path: str, arch="resnet18"):
+    def __init__(self, ckpt_path: str, arch="resnet50"):
         super().__init__()
 
         # Load the checkpoint
@@ -87,7 +87,7 @@ class SimCLRFeatureExtractor(nn.Module):
     def forward(self, x: torch.Tensor):
         # Define a hook function that captures the intermediate layer outputs
         features = {}
-        
+
         def hook(module, input, output):
             features['output'] = output.detach()
 
@@ -121,7 +121,7 @@ class SimCLRFeatureExtractor(nn.Module):
     #     return x
 
 
-def load_model(ckpt_path: str, arch="resnet18"):
+def load_model(ckpt_path: str, arch="resnet50"):
     """Load an SimCLR feature extractor model from checkpoint"""
 
     return SimCLRFeatureExtractor(ckpt_path, arch=arch)
