@@ -82,7 +82,7 @@ group.add_argument(
     "--arch",
     type=str,
     help="Model architecture. Either resnet18 or resnet50",
-    default="resnet18",
+    default="resnet50",
 )
 
 group.add_argument(
