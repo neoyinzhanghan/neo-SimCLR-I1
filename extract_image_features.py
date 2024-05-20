@@ -22,6 +22,7 @@ transform = transforms.Compose(
     ]
 )
 
+
 def process_directory(directory, save_directory):
     """Recursively process all images in the directory using the model."""
     # Prepare a list of all files to process
@@ -37,12 +38,13 @@ def process_directory(directory, save_directory):
     for image_path, save_dir in tqdm(image_files, desc="Processing Images"):
         process_image(image_path, save_dir)
 
+
 def process_image(image_path, output_dir):
     """Process an image and save the output tensor."""
     try:
         # Load and transform the image
         image = read_image(image_path).to("cuda")
-        
+
         # Convert image from ByteTensor to FloatTensor and scale it
         image = image.float() / 255  # Normalize to range [0, 1]
 
@@ -59,8 +61,12 @@ def process_image(image_path, output_dir):
         )
         torch.save(output, output_path)
         print(f"Processed and saved: {output_path}")
+        # print the shape of the saved tensor
+        print(f"Shape of the saved tensor: {output.shape}")
+
     except Exception as e:
         print(f"Failed to process {image_path}: {str(e)}")
+
 
 # Start processing
 process_directory(data_dir, save_dir)
