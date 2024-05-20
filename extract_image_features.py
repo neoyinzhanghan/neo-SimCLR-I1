@@ -26,8 +26,8 @@ transform = transforms.Compose(
 
 def process_directory(directory, save_directory):
     """Recursively process all files in the directory using the model."""
-    for root, dirs, files in os.walk(directory):
-        for file in files:
+    for root, dirs, files in tqdm(os.walk(directory), desc="Processing"):
+        for file in tqdm(files, desc=root):
             file_path = os.path.join(root, file)
             relative_path = os.path.relpath(root, directory)
             save_path = os.path.join(save_directory, relative_path)
