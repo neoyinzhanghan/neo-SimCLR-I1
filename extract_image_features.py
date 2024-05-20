@@ -44,16 +44,14 @@ def process_image(image_path, output_dir):
     try:
         # Load and transform the image
         image = read_image(image_path).to("cuda")
-
-        # Convert image from ByteTensor to FloatTensor and scale it
         image = image.float() / 255  # Normalize to range [0, 1]
-
         image = transform(image)
         image = image.unsqueeze(0)  # Add batch dimension
 
         # Forward pass through the model
         with torch.no_grad():
             output = model(image)
+            output = torch.squeeze(output)  # Remove all redundant dimensions
 
         # Save the output tensor
         output_path = os.path.join(
