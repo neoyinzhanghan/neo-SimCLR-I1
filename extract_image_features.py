@@ -1,4 +1,5 @@
 import os
+import shutil
 import torch
 from torchvision import transforms
 from torchvision.io import read_image
@@ -16,28 +17,26 @@ model = model.to("cuda")
 model.eval()
 
 # Define image transformation for 96x96 images
-transform = transforms.Compose(
-    [
-        transforms.Resize((96, 96)),  # Resize to the expected input size of the model
-    ]
-)
-
+transform = transforms.Compose([
+    transforms.Resize((96, 96)),  # Resize to the expected input size of the model
+])
 
 def process_directory(directory, save_directory):
-    """Recursively process all images in the directory using the model."""
-    # Prepare a list of all files to process
-    image_files = []
+    """Recursively process all files in the directory using the model."""
     for root, dirs, files in os.walk(directory):
         for file in files:
-            if file.lower().endswith(
-                (".png", ".jpg", ".jpeg", ".bmp", ".tiff", ".gif")
-            ):
-                image_files.append((os.path.join(root, file), save_directory))
-
-    # Process each file with a progress bar
-    for image_path, save_dir in tqdm(image_files, desc="Processing Images"):
-        process_image(image_path, save_dir)
-
+            file_path = os.path.join(root, file)
+            relative_path = os.path.relpath(root, directory)
+            save_path = os.path.join(save_directory, relative_path)
+            
+            if not os.path.exists(save_path):
+                os.makedirs(save_path)
+            
+            if file.lower().endswith((".png", ".jpg", ".jpeg", ".bmp", ".tiff", ".gif")):
+                process_image(file_path, save_path)
+            else:
+                # Copy non-image files to the new directory
+                shutil.copy(file_path, save_path)
 
 def process_image(image_path, output_dir):
     """Process an image and save the output tensor."""
@@ -51,20 +50,14 @@ def process_image(image_path, output_dir):
         # Forward pass through the model
         with torch.no_grad():
             output = model(image)
-            output = torch.squeeze(output)  # Remove all redundant dimensions
 
         # Save the output tensor
-        output_path = os.path.join(
-            output_dir, os.path.splitext(os.path.basename(image_path))[0] + ".pt"
-        )
+        output_path = os.path.join(output_dir, os.path.splitext(os.path.basename(image_path))[0] + ".pt")
         torch.save(output, output_path)
         print(f"Processed and saved: {output_path}")
-        # print the shape of the saved tensor
-        print(f"Shape of the saved tensor: {output.shape}")
 
     except Exception as e:
         print(f"Failed to process {image_path}: {str(e)}")
-
 
 # Start processing
 process_directory(data_dir, save_dir)
