@@ -22,8 +22,7 @@ transform = transforms.Compose(
     ]
 )
 
-
-def process_directory(directory):
+def process_directory(directory, save_directory):
     """Recursively process all images in the directory using the model."""
     # Prepare a list of all files to process
     image_files = []
@@ -32,12 +31,11 @@ def process_directory(directory):
             if file.lower().endswith(
                 (".png", ".jpg", ".jpeg", ".bmp", ".tiff", ".gif")
             ):
-                image_files.append((os.path.join(root, file), root))
+                image_files.append((os.path.join(root, file), save_directory))
 
     # Process each file with a progress bar
-    for image_path, root in tqdm(image_files, desc="Processing Images"):
-        process_image(image_path, root)
-
+    for image_path, save_dir in tqdm(image_files, desc="Processing Images"):
+        process_image(image_path, save_dir)
 
 def process_image(image_path, output_dir):
     """Process an image and save the output tensor."""
@@ -59,7 +57,6 @@ def process_image(image_path, output_dir):
         print(f"Processed and saved: {output_path}")
     except Exception as e:
         print(f"Failed to process {image_path}: {str(e)}")
-
 
 # Start processing
 process_directory(data_dir, save_dir)
